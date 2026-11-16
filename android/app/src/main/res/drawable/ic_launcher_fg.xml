@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Two dots with sound waves on both sides: two devices playing together. Canvas 108dp, safe zone 66dp. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <group android:translateX="22" android:translateY="22" android:scaleX="1" android:scaleY="1">
+        <path android:fillColor="#1B1200" android:pathData="M22,32m-6,0a6,6 0,1 1,12 0a6,6 0,1 1,-12 0"/>
+        <path android:fillColor="#1B1200" android:pathData="M42,32m-6,0a6,6 0,1 1,12 0a6,6 0,1 1,-12 0"/>
+        <path android:strokeColor="#1B1200" android:strokeWidth="4" android:strokeLineCap="round" android:fillColor="#00000000" android:pathData="M12,20a18,18 0,0 0,0 24"/>
+        <path android:strokeColor="#1B1200" android:strokeWidth="4" android:strokeLineCap="round" android:fillColor="#00000000" android:pathData="M52,20a18,18 0,0 1,0 24"/>
+        <path android:strokeColor="#1B1200" android:strokeWidth="4" android:strokeLineCap="round" android:fillColor="#00000000" android:pathData="M5,13a28,28 0,0 0,0 38"/>
+        <path android:strokeColor="#1B1200" android:strokeWidth="4" android:strokeLineCap="round" android:fillColor="#00000000" android:pathData="M59,13a28,28 0,0 1,0 38"/>
+    </group>
+</vector>

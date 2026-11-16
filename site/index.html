@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#11141F">
+<title>Saath for Android</title>
+<meta name="description" content="Turn your friends' phones and laptops into one speaker. They scan a QR code and play your music in sync, with no app to install.">
+<style>
+:root{
+  /* Download page: the app's night palette, one narrow column, download first */
+  --bg:#11141F; --card:#1A1F2E; --line:#2F3651; --ink:#F2F4FA; --muted:#9AA2BA; --accent:#F5A524; --accent-ink:#1B1200; --good:#3DD6A8;
+  --font:'Segoe UI',system-ui,-apple-system,Roboto,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.55}
+main{max-width:620px;margin:0 auto;padding:40px 20px 60px;display:grid;gap:28px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:22px}
+.brand svg{width:40px;height:40px;color:var(--accent)}
+h1{font-size:clamp(30px,7vw,44px);line-height:1.08;margin:0;letter-spacing:-.02em;text-wrap:balance}
+h2{font-size:19px;margin:0 0 10px}
+p{margin:0}
+.lede{color:var(--muted);font-size:18px;max-width:52ch}
+.dl{display:grid;gap:10px;justify-items:start}
+.btn{display:inline-flex;align-items:center;gap:10px;background:var(--accent);color:var(--accent-ink);text-decoration:none;font-weight:800;font-size:18px;padding:16px 22px;border-radius:14px}
+.btn:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.meta{color:var(--muted);font-size:14px;font-variant-numeric:tabular-nums}
+.card{background:var(--card);border-radius:18px;padding:20px}
+ol{margin:0;padding-left:22px;display:grid;gap:8px}
+li::marker{color:var(--accent);font-weight:800}
+.muted{color:var(--muted)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.tag{display:inline-block;font-size:12.5px;font-weight:800;color:var(--good);margin-bottom:6px}
+footer{color:var(--muted);font-size:13.5px}
+a{color:var(--accent)}
+</style>
+</head>
+<body>
+<main>
+  <div class="brand"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" aria-hidden="true"><circle cx="22" cy="32" r="6" fill="currentColor" stroke="none"/><circle cx="42" cy="32" r="6" fill="currentColor" stroke="none"/><path d="M12 20a18 18 0 0 0 0 24"/><path d="M52 20a18 18 0 0 1 0 24"/><path d="M5 13a28 28 0 0 0 0 38"/><path d="M59 13a28 28 0 0 1 0 38"/></svg>Saath</div>
+
+  <div style="display:grid;gap:14px">
+    <h1>Your friends' phones become your speaker.</h1>
+    <p class="lede">Start a party on your Android phone. Friends scan the QR code and their phones and laptops play your music in sync. They install nothing.</p>
+  </div>
+
+  <div class="dl">
+    <a class="btn" href="/apk" id="dl">Download for Android</a>
+    <span class="meta" id="ver">Latest version, Android 10 or later</span>
+  </div>
+
+  <section class="card">
+    <h2>Install it</h2>
+    <ol>
+      <li>Tap <b>Download for Android</b>, then open the file.</li>
+      <li>If Android asks, allow your browser to install unknown apps.</li>
+      <li>Tap <b>Install</b>. If Play Protect warns about an unknown developer, tap <b>Install anyway</b>.</li>
+      <li>After that, Saath updates itself. The first time, allow Saath to install updates when it asks.</li>
+    </ol>
+  </section>
+
+  <section class="two">
+    <div class="card"><span class="tag">ONLINE</span><h2>Same Wi-Fi</h2><p class="muted">At home or in the hostel, everyone joins the same Wi-Fi and scans one QR code.</p></div>
+    <div class="card"><span class="tag">OFFLINE</span><h2>No internet at all</h2><p class="muted">Outdoors, your phone makes its own Wi-Fi. Friends scan two QR codes: one for the Wi-Fi, one for the party.</p></div>
+    <div class="card"><span class="tag">MY MUSIC</span><h2>Songs on your phone</h2><p class="muted">Pick songs from your phone's music library, or the built-in test beat.</p></div>
+    <div class="card"><span class="tag">ANY APP</span><h2>Whatever you play</h2><p class="muted">Share the sound from Spotify, YouTube Music and other apps that allow it.</p></div>
+  </section>
+
+  <section class="card">
+    <h2>In sync, measured</h2>
+    <p class="muted">Every phone and laptop has its own hidden audio delay. Tap <b>Tune up</b>: each device plays a short chirp, your phone's microphone hears exactly when each one arrives, and Saath corrects each device. Then it checks again and shows the gap between speakers in milliseconds.</p>
+  </section>
+
+  <footer>Source and release history on <a href="https://github.com/Sumit607/saath">GitHub</a>.</footer>
+</main>
+<script>
+fetch('https://api.github.com/repos/Sumit607/saath/releases/latest').then(r => r.ok ? r.json() : null).then(r => {
+  if (!r) return;
+  const d = new Date(r.published_at);
+  const apk = (r.assets || []).find(a => a.name === 'saath.apk');
+  const size = apk ? ' · ' + (apk.size / 1048576).toFixed(1) + ' MB' : '';
+  document.getElementById('ver').textContent = 'Version ' + r.tag_name.replace(/^v/, '') + ' · ' + d.toLocaleDateString(undefined, {day: 'numeric', month: 'short', year: 'numeric'}) + size + ' · Android 10 or later';
+}).catch(() => {});
+</script>
+</body>
+</html>

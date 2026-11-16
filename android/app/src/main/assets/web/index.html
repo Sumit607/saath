@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#11141F">
+<title>Saath party</title>
+<style>
+:root{
+  /* Listener page: one dark night palette, single column, sized for phones first */
+  --bg:#11141F; --card:#1A1F2E; --card2:#242A3D; --line:#2F3651; --ink:#F2F4FA; --muted:#9AA2BA;
+  --accent:#F5A524; --accent-ink:#1B1200; --good:#3DD6A8; --warn:#FF9A5C; --bad:#FF5A73;
+  --font:'Segoe UI',system-ui,-apple-system,Roboto,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+main{max-width:460px;margin:0 auto;padding:calc(18px + env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px;min-height:100%}
+[hidden]{display:none !important}
+h1,h2{margin:0;font-weight:800;letter-spacing:-.01em}
+h1{font-size:26px}
+h2{font-size:21px}
+p{margin:0}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px}
+.brand svg{width:30px;height:30px;color:var(--accent)}
+.top{display:flex;justify-content:space-between;align-items:center}
+.muted{color:var(--muted)}
+.small{font-size:13.5px}
+.card{background:var(--card);border-radius:18px;padding:16px;display:grid;gap:12px}
+label{font-size:13.5px;font-weight:600;color:var(--muted)}
+input[type=text],input[type=tel]{width:100%;background:var(--card2);border:1.5px solid var(--line);border-radius:12px;padding:12px 13px;font:inherit;color:var(--ink)}
+input[type=text]:focus,input[type=tel]:focus{border-color:var(--accent);outline:none}
+.field{display:grid;gap:6px}
+.err{color:var(--bad);font-size:14px}
+button{font:inherit;cursor:pointer}
+.btn{border:0;border-radius:14px;padding:14px 16px;font-weight:800;font-size:16px;background:var(--card2);color:var(--ink)}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn:disabled{opacity:.5}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+canvas{width:100%;height:150px;display:block;border-radius:18px;background:var(--card)}
+.title{font-size:23px;font-weight:800;line-height:1.2;word-break:break-word}
+.badge{display:flex;gap:10px;align-items:center;padding:12px 14px;border-radius:14px;font-weight:700}
+.badge i{width:10px;height:10px;border-radius:50%;flex:none;background:var(--muted)}
+.badge small{display:block;font-weight:500;color:var(--muted);font-size:13px}
+.badge.good{background:rgba(61,214,168,.13)}.badge.good i{background:var(--good)}
+.badge.warn{background:rgba(255,154,92,.13)}.badge.warn i{background:var(--warn)}
+.badge.bad{background:rgba(255,90,115,.14)}.badge.bad i{background:var(--bad)}
+.badge.neutral{background:var(--card)}
+.vol{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center}
+.vol input{width:100%;accent-color:var(--accent)}
+.banner{display:flex;gap:10px;align-items:center;border-radius:14px;padding:12px 14px;font-weight:600;font-size:14.5px;background:rgba(245,165,36,.15)}
+.banner b{display:inline-block;width:11px;height:11px;border-radius:50%;background:var(--accent);flex:none;animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(.7);opacity:.6}50%{transform:scale(1.1);opacity:1}}
+@media (prefers-reduced-motion: reduce){.banner b{animation:none}}
+.link{border:0;background:transparent;color:var(--muted);text-decoration:underline;font-size:14px;padding:6px;justify-self:center;align-self:center}
+.msg{margin:auto 0;text-align:center;display:grid;gap:14px}
+video{position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;left:0;top:0}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <div class="brand"><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" aria-hidden="true"><circle cx="22" cy="32" r="6" fill="currentColor" stroke="none"/><circle cx="42" cy="32" r="6" fill="currentColor" stroke="none"/><path d="M12 20a18 18 0 0 0 0 24"/><path d="M52 20a18 18 0 0 1 0 24"/><path d="M5 13a28 28 0 0 0 0 38"/><path d="M59 13a28 28 0 0 1 0 38"/></svg>Saath</div>
+    <span class="muted small" id="devcount"></span>
+  </div>
+
+  <section id="v-join" class="card" hidden>
+    <h1>You're invited</h1>
+    <p class="muted" id="join-sub">Join the party to play the host's music on this device, in sync with everyone else.</p>
+    <form id="join-form" novalidate>
+      <div class="card" style="padding:0;background:none">
+        <div class="field"><label for="name">Your name</label><input type="text" id="name" maxlength="24" autocomplete="given-name" placeholder="e.g. Rahul"></div>
+        <div class="field" id="pin-field" hidden><label for="pin">Party PIN</label><input type="tel" id="pin" inputmode="numeric" maxlength="4" placeholder="4 digits from the host's screen"></div>
+        <p class="err" id="join-err" role="alert" hidden></p>
+        <button class="btn primary" type="submit" id="join-btn">Join &amp; play</button>
+        <p class="muted small">Nothing to install. Your browser needs this one tap before it can play sound.</p>
+      </div>
+    </form>
+  </section>
+
+  <section id="v-play" hidden style="display:grid;gap:14px">
+    <div id="banner" class="banner" hidden><b></b><span id="banner-text"></span></div>
+    <canvas id="viz" width="840" height="300" aria-hidden="true"></canvas>
+    <div>
+      <div class="title" id="title">Waiting for the host to play a song</div>
+      <div class="muted small" id="sub">Music starts on every device at the same moment</div>
+    </div>
+    <div class="badge neutral" id="badge" role="status"><i></i><span id="badge-text">Syncing clock…</span></div>
+    <div class="vol"><button class="btn" id="mute">Mute</button><input type="range" id="vol" min="0" max="1" step="0.01" value="1" aria-label="Volume on this device"></div>
+    <p class="muted small" id="keep-note">Keep this page open and the volume up. The screen stays on while the party plays.</p>
+    <button class="link" id="leave">Leave party</button>
+  </section>
+
+  <section id="v-msg" class="msg" hidden>
+    <h2 id="msg-title">Party ended</h2>
+    <p class="muted" id="msg-text">The host ended the party.</p>
+    <button class="btn" id="msg-btn" hidden>Try again</button>
+  </section>
+</main>
+<video id="awake" playsinline muted loop></video>
+<script>
+(() => {
+'use strict';
+const $ = s => document.getElementById(s);
+const qs = new URLSearchParams(location.search);
+const token = ((location.pathname.match(/\/j\/([A-Za-z0-9]+)/) || [])[1]) || qs.get('token') || '';
+const TEST = qs.has('test');
+const SIMLAT = +(qs.get('simlat') || 0);
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+};
+let cid = qs.get('cid') || store.get('saath.cid');
+if (!cid) { cid = 'c' + Math.random().toString(36).slice(2, 12); store.set('saath.cid', cid); }
+
+const E = window.__saath = {
+  ws: null, ctx: null, gain: null, chirpGain: null, analyser: null, chirpBuf: null,
+  offset: null, rtt: null, samples: [], dmap: [], d: null,
+  epoch: -1, corr: 0, tuned: false, measured: null, nextT: 0, lastSeq: -1, entries: [],
+  late: 0, recv: 0, joined: false, ready: false, welcomed: false, playing: false, title: '', sub: '', devices: 0,
+  pin: '', name: '', muted: false, vol: 1, leaving: false, retry: 0, testLog: [], chirps: []
+};
+
+/* ---------- views ---------- */
+function show(id) { ['v-join', 'v-play', 'v-msg'].forEach(v => { $(v).hidden = v !== id; }); }
+function message(title, text, retry) {
+  $('msg-title').textContent = title; $('msg-text').textContent = text;
+  $('msg-btn').hidden = !retry; show('v-msg');
+}
+function banner(text) { $('banner').hidden = !text; $('banner-text').textContent = text || ''; }
+function joinError(t) { $('join-err').hidden = !t; $('join-err').textContent = t || ''; }
+
+/* ---------- start ---------- */
+$('name').value = store.get('saath.name') || '';
+fetch('/info?token=' + encodeURIComponent(token), {cache: 'no-store'}).then(r => r.json()).then(info => {
+  if (!info.ok) { message('This link has expired', 'It belongs to an earlier party. Scan the QR code on the host’s phone again.', false); return; }
+  $('pin-field').hidden = !info.pin;
+  if (info.devices) $('join-sub').textContent = 'Join the party to play the host’s music on this device, in sync with ' + info.devices + ' other device' + (info.devices === 1 ? '' : 's') + '.';
+  show('v-join');
+}).catch(() => { message('Can’t reach the host', 'Check that this device is on the same Wi-Fi as the host’s phone, then try again.', true); });
+$('msg-btn').addEventListener('click', () => location.reload());
+
+$('join-form').addEventListener('submit', ev => {
+  ev.preventDefault();
+  const name = $('name').value.trim();
+  const pin = $('pin').value.trim();
+  if (!name) { joinError('Enter your name so the host knows who joined.'); $('name').focus(); return; }
+  if (!$('pin-field').hidden && !/^\d{4}$/.test(pin)) { joinError('Enter the 4-digit PIN shown on the host’s phone.'); $('pin').focus(); return; }
+  joinError('');
+  E.name = name; E.pin = pin; store.set('saath.name', name);
+  startAudio();
+  E.joined = true;
+  show('v-play'); renderBadge();
+  connect();
+});
+$('name').addEventListener('input', () => joinError(''));
+$('pin').addEventListener('input', () => { $('pin').value = $('pin').value.replace(/\D/g, ''); joinError(''); });
+
+/* ---------- audio ---------- */
+function startAudio() {
+  if (E.ctx) return;
+  try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
+  const AC = window.AudioContext || window.webkitAudioContext;
+  try { E.ctx = new AC({latencyHint: 'playback'}); } catch (e) { E.ctx = new AC(); }
+  const c = E.ctx;
+  E.gain = c.createGain();
+  E.analyser = c.createAnalyser(); E.analyser.fftSize = 128; E.analyser.smoothingTimeConstant = 0.8;
+  E.gain.connect(E.analyser); E.analyser.connect(c.destination);
+  E.chirpGain = c.createGain(); E.chirpGain.gain.value = 1; E.chirpGain.connect(c.destination);
+  E.chirpBuf = makeChirp(c);
+  // unlock: a short silent buffer on the user's tap
+  const s = c.createBufferSource(); s.buffer = c.createBuffer(1, 1, c.sampleRate); s.connect(c.destination); s.start();
+  c.resume().catch(() => {});
+  keepAwake();
+  setInterval(updateMap, 200);
+  requestAnimationFrame(draw);
+}
+function makeChirp(c) {
+  const sr = c.sampleRate, n = Math.floor(sr * 0.07), b = c.createBuffer(1, n, sr), d = b.getChannelData(0);
+  const f0 = 1500, f1 = 6500, T = n / sr;
+  for (let i = 0; i < n; i++) {
+    const t = i / sr, ph = 2 * Math.PI * (f0 * t + (f1 - f0) * t * t / (2 * T)), w = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / (n - 1));
+    d[i] = Math.sin(ph) * w * 0.55;
+  }
+  return b;
+}
+/* d = performance time (ms) minus audio-context time (ms) for the sample leaving the speaker right now */
+function updateMap() {
+  const c = E.ctx; if (!c) return;
+  if (c.state !== 'running') { c.resume().catch(() => {}); return; }
+  let d;
+  if (c.getOutputTimestamp) {
+    const ts = c.getOutputTimestamp();
+    if (!(ts.contextTime > 0) || !(ts.performanceTime > 0)) return;
+    d = ts.performanceTime - ts.contextTime * 1000;
+  } else {
+    d = performance.now() - c.currentTime * 1000 + ((c.outputLatency || c.baseLatency || 0.02) * 1000);
+  }
+  E.dmap.push(d); if (E.dmap.length > 15) E.dmap.shift();
+  const s = E.dmap.slice().sort((a, b) => a - b); E.d = s[s.length >> 1];
+  maybeReady();
+}
+/* host clock (ms) -> audio-context time (s) at which a sample must start to leave the speaker then */
+function hostToCtx(h) { return (h - E.offset - E.corr - E.d) / 1000; }
+function ctxToHost(t) { return t * 1000 + E.d + E.offset; }
+
+function onAudio(buf) {
+  E.recv++;
+  const dv = new DataView(buf);
+  if (dv.getUint8(0) !== 83 || dv.getUint8(1) !== 65) return;
+  const epoch = dv.getUint32(4, true), seq = dv.getUint32(8, true), playAt = dv.getFloat64(12, true);
+  const sr = dv.getUint32(20, true), ch = dv.getUint8(24), frames = dv.getUint32(28, true);
+  if (epoch < E.epoch) return;
+  if (epoch > E.epoch) { flushLocal(); E.epoch = epoch; }
+  if (!E.ctx || E.offset === null || E.d === null) return;
+  const ab = E.ctx.createBuffer(ch, frames, sr);
+  const pcm = new Int16Array(buf, 32, frames * ch);
+  for (let k = 0; k < ch; k++) { const out = ab.getChannelData(k); for (let i = 0, j = k; i < frames; i++, j += ch) out[i] = pcm[j] / 32768; }
+  const e = {ab, playAt, seq, dur: frames / sr, src: null, when: 0, end: 0};
+  E.entries.push(e);
+  schedule(e);
+  const now = E.ctx.currentTime;
+  while (E.entries.length && (E.entries[0].end < now - 0.5 || E.entries.length > 200) && E.entries[0] !== e) E.entries.shift();
+}
+function schedule(e) {
+  const c = E.ctx, now = c.currentTime;
+  const ideal = hostToCtx(e.playAt);
+  if (ideal + e.dur < now + 0.015) { countLate(); e.dead = true; return; }
+  let when = ideal, rate = 1, offs = 0;
+  if (E.nextT > 0 && e.seq === E.lastSeq + 1 && Math.abs(E.nextT - ideal) < 0.03) {
+    const err = E.nextT - ideal;            // >0: we are running behind the ideal timeline
+    rate = 1 + Math.max(-0.003, Math.min(0.003, err / 1.0));
+    when = E.nextT;
+  }
+  if (when < now + 0.01) { offs = (now + 0.01 - when) * rate; when = now + 0.01; if (offs >= e.dur) { countLate(); e.dead = true; return; } }
+  const s = c.createBufferSource(); s.buffer = e.ab; s.playbackRate.value = rate; s.connect(E.gain);
+  s.start(when, offs);
+  e.src = s; e.when = when; e.end = when + (e.dur - offs) / rate; e.dead = false;
+  E.nextT = e.end; E.lastSeq = e.seq;
+  if (TEST) { E.testLog.push({seq: e.seq, err: ctxToHost(when) + SIMLAT - (e.playAt + offs * 1000), corr: E.corr}); if (E.testLog.length > 400) E.testLog.shift(); }
+}
+/* audio skipped right after a correction or a reconnect is expected, not a Wi-Fi problem */
+function countLate() { if (performance.now() < (E.graceUntil || 0)) E.lateExpected = (E.lateExpected || 0) + 1; else E.late++; }
+function flushLocal() {
+  const now = E.ctx ? E.ctx.currentTime : 0;
+  for (const e of E.entries) if (e.src && e.end > now) { try { e.src.stop(); } catch (x) {} }
+  E.entries = []; E.nextT = 0; E.lastSeq = -1;
+}
+/* after a new correction: move everything not yet playing to the new timeline */
+function reschedule() {
+  if (!E.ctx) return;
+  E.graceUntil = performance.now() + 2500;
+  const now = E.ctx.currentTime;
+  E.nextT = 0; E.lastSeq = -1;
+  for (const e of E.entries) {
+    if (e.src && e.when > now + 0.02) { try { e.src.stop(); } catch (x) {} e.src = null; schedule(e); }
+    else if (e.src) { E.nextT = 0; }
+  }
+}
+function onChirp(m) {
+  if (!E.ctx || E.offset === null || E.d === null) { send({type: 'chirpmiss'}); return; }
+  const when = hostToCtx(m.at), now = E.ctx.currentTime;
+  if (when < now + 0.01) { send({type: 'chirpmiss'}); return; }
+  const s = E.ctx.createBufferSource(); s.buffer = E.chirpBuf; s.connect(E.chirpGain); s.start(when);
+  if (TEST) { const out = ctxToHost(when) + SIMLAT; E.chirps.push(out); send({type: 'chirped', at: m.at, out}); }
+}
+
+/* ---------- connection & clock sync ---------- */
+function send(o) { if (E.ws && E.ws.readyState === 1) E.ws.send(JSON.stringify(o)); }
+let pingTimer = null, statTimer = null;
+function connect() {
+  const ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws?token=' + encodeURIComponent(token));
+  ws.binaryType = 'arraybuffer';
+  E.ws = ws; E.welcomed = false; E.ready = false;
+  ws.onopen = () => {
+    E.retry = 0;
+    E.graceUntil = performance.now() + 3000;
+    send({type: 'hello', cid, name: E.name, pin: E.pin, ua: navigator.userAgent});
+    let n = 0;
+    clearInterval(pingTimer);
+    pingTimer = setInterval(() => { send({type: 'ping', t0: performance.now()}); if (++n === 14) { clearInterval(pingTimer); pingTimer = setInterval(() => send({type: 'ping', t0: performance.now()}), 1000); } }, 90);
+    clearInterval(statTimer);
+    statTimer = setInterval(sendStat, 2000);
+  };
+  ws.onmessage = ev => {
+    if (typeof ev.data !== 'string') { onAudio(ev.data); return; }
+    let m; try { m = JSON.parse(ev.data); } catch (e) { return; }
+    switch (m.type) {
+      case 'pong': onPong(m); break;
+      case 'welcome':
+        E.welcomed = true; E.corr = m.corr || 0; E.tuned = !!m.tuned; E.measured = m.measured;
+        E.epoch = Math.max(E.epoch, m.epoch); applyState(m); banner(''); maybeReady(); renderBadge(); break;
+      case 'state': applyState(m); break;
+      case 'flush': if (m.epoch > E.epoch) { flushLocal(); E.epoch = m.epoch; } break;
+      case 'tune': { const changed = Math.abs((m.corr || 0) - E.corr) > 0.05; E.corr = m.corr || 0; E.tuned = !!m.tuned; E.measured = m.measured; if (changed) reschedule(); renderBadge(); break; }
+      case 'chirp': onChirp(m); break;
+      case 'reject':
+        E.leaving = true; ws.close();
+        if (m.reason === 'pin') { E.joined = false; show('v-join'); $('pin-field').hidden = false; joinError('That PIN doesn’t match. Check the 4 digits on the host’s phone.'); E.leaving = false; }
+        else if (m.reason === 'full') message('The party is full', 'The host already has the most devices this party allows.', true);
+        else if (m.reason === 'removed') message('You were removed', 'The host removed this device from the party.', false);
+        else message('This link has expired', 'It belongs to an earlier party. Scan the QR code on the host’s phone again.', false);
+        break;
+      case 'ended': E.leaving = true; flushLocal(); message('Party ended', 'The host ended the party. Thanks for playing along.', false); break;
+    }
+  };
+  ws.onclose = () => {
+    clearInterval(pingTimer); clearInterval(statTimer);
+    if (E.leaving || !E.joined) return;
+    E.ready = false;
+    banner('Connection lost. Reconnecting…');
+    const wait = Math.min(4000, 700 + E.retry++ * 500);
+    setTimeout(() => { if (!E.leaving) connect(); }, wait);
+  };
+}
+function onPong(m) {
+  const t1 = performance.now();
+  const rtt = (t1 - m.t0) - (m.hs - m.hr);
+  const off = ((m.hr - m.t0) + (m.hs - t1)) / 2;
+  if (!(rtt >= 0) || rtt > 1500) return;
+  E.samples.push({rtt, off}); if (E.samples.length > 24) E.samples.shift();
+  if (E.samples.length < 4) return;
+  const minR = Math.min(...E.samples.map(x => x.rtt));
+  const good = E.samples.filter(x => x.rtt <= minR * 1.25 + 1);
+  E.offset = good.reduce((a, x) => a + x.off, 0) / good.length;
+  E.rtt = minR;
+  maybeReady();
+}
+function maybeReady() {
+  if (E.ready || !E.welcomed || E.offset === null || E.d === null || E.samples.length < 8) return;
+  E.ready = true; send({type: 'ready'}); renderBadge();
+}
+function sendStat() {
+  const now = E.ctx ? E.ctx.currentTime : 0;
+  send({type: 'stat', rtt: E.rtt, late: E.late, buf: Math.max(0, Math.round((E.nextT - now) * 1000)), outLat: E.ctx && E.ctx.outputLatency ? E.ctx.outputLatency * 1000 : -1});
+  renderBadge();
+}
+function applyState(m) {
+  if ('title' in m) E.title = m.title || '';
+  if ('sub' in m) E.sub = m.sub || '';
+  if ('playing' in m) E.playing = !!m.playing;
+  if ('devices' in m) E.devices = m.devices;
+  $('title').textContent = E.title ? E.title + (E.playing ? '' : ' (paused)') : 'Waiting for the host to play a song';
+  $('sub').textContent = E.title ? (E.sub || '') : 'Music starts on every device at the same moment';
+  $('devcount').textContent = E.devices ? E.devices + ' device' + (E.devices === 1 ? '' : 's') : '';
+}
+let lastLate = 0, lateSeenAt = 0;
+function renderBadge() {
+  const b = $('badge'); let cls = 'neutral', text;
+  if (E.late > lastLate) { lateSeenAt = Date.now(); lastLate = E.late; }
+  if (!E.ready) text = 'Syncing clock…';
+  else if (Date.now() - lateSeenAt < 6000 && E.playing) { cls = 'warn'; text = 'Weak Wi-Fi<small>Some audio arrived too late to play. Move closer to the host.</small>'; }
+  else if (E.tuned && typeof E.measured === 'number') {
+    const v = E.measured, abs = Math.abs(v).toFixed(1);
+    cls = Math.abs(v) <= 10 ? 'good' : 'warn';
+    text = (Math.abs(v) <= 10 ? 'In sync' : 'Slightly off') + ' · ' + (v >= 0 ? '+' : '−') + abs + ' ms<small>Tuned by the host’s microphone</small>';
+  } else if (E.tuned) { cls = 'good'; text = 'Tuned<small>Lined up with the other speakers</small>'; }
+  else { cls = 'warn'; text = 'Ready, not tuned yet<small>The host can tap Tune up to line up every speaker</small>'; }
+  b.className = 'badge ' + cls;
+  $('badge-text').innerHTML = text;
+}
+
+/* ---------- controls ---------- */
+function applyVol() { if (E.gain) E.gain.gain.value = E.muted ? 0 : E.vol; $('mute').textContent = E.muted ? 'Unmute' : 'Mute'; }
+$('vol').addEventListener('input', ev => { E.vol = +ev.target.value; applyVol(); });
+$('mute').addEventListener('click', () => { E.muted = !E.muted; applyVol(); });
+$('leave').addEventListener('click', () => {
+  E.leaving = true; send({type: 'bye'}); flushLocal();
+  setTimeout(() => { try { E.ws.close(); } catch (e) {} }, 150);
+  message('You left the party', 'Scan the host’s QR code again to rejoin.', false);
+});
+document.addEventListener('visibilitychange', () => { if (!document.hidden && E.ctx) E.ctx.resume().catch(() => {}); if (!document.hidden) keepAwake(); });
+
+/* ---------- keep the screen on ---------- */
+let wakeLock = null;
+function keepAwake() {
+  if ('wakeLock' in navigator && window.isSecureContext) {
+    navigator.wakeLock.request('screen').then(l => { wakeLock = l; }).catch(() => {});
+  }
+  const v = $('awake');
+  if (!v.src) v.src = 'data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAANkbW9vdgAAAGxtdmhkAAAAAAAAAAAAAAAAAAAD6AAAB9AAAQAAAQAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAo50cmFrAAAAXHRraGQAAAADAAAAAAAAAAAAAAABAAAAAAAAB9AAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAABAAAAAQAAAAAAAkZWR0cwAAABxlbHN0AAAAAAAAAAEAAAfQAABAAAABAAAAAAIGbWRpYQAAACBtZGhkAAAAAAAAAAAAAAAAAABAAAAAgABVxAAAAAAALWhkbHIAAAAAAAAAAHZpZGUAAAAAAAAAAAAAAABWaWRlb0hhbmRsZXIAAAABsW1pbmYAAAAUdm1oZAAAAAEAAAAAAAAAAAAAACRkaW5mAAAAHGRyZWYAAAAAAAAAAQAAAAx1cmwgAAAAAQAAAXFzdGJsAAAAwXN0c2QAAAAAAAAAAQAAALFhdmMxAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAABAAEABIAAAASAAAAAAAAAABFUxhdmM2MC4zMS4xMDIgbGlieDI2NAAAAAAAAAAAAAAAGP//AAAAN2F2Y0MBZAAK/+EAGWdkAAqscgRewEQAAAMABAAAAwAQPEiWEYABAAdo6EOBlLIs/fj4AAAAABBwYXNwAAAAAQAAAAEAAAAUYnRydAAAAAAAAAusAAALrAAAABhzdHRzAAAAAAAAAAEAAAAEAAAgAAAAABRzdHNzAAAAAAAAAAEAAAABAAAAKGN0dHMAAAAAAAAAAwAAAAEAAEAAAAAAAQAAgAAAAAACAAAgAAAAABxzdHNjAAAAAAAAAAEAAAABAAAABAAAAAEAAAAkc3RzegAAAAAAAAAAAAAABAAAAsQAAAANAAAADQAAAA0AAAAUc3RjbwAAAAAAAAABAAADlAAAAGJ1ZHRhAAAAWm1ldGEAAAAAAAAAIWhkbHIAAAAAAAAAAG1kaXJhcHBsAAAAAAAAAAAAAAAALWlsc3QAAAAlqXRvbwAAAB1kYXRhAAAAAQAAAABMYXZmNjAuMTYuMTAwAAAACGZyZWUAAALzbWRhdAAAAq8GBf//q9xF6b3m2Ui3lizYINkj7u94MjY0IC0gY29yZSAxNjQgcjMxMDggMzFlMTlmOSAtIEguMjY0L01QRUctNCBBVkMgY29kZWMgLSBDb3B5bGVmdCAyMDAzLTIwMjMgLSBodHRwOi8vd3d3LnZpZGVvbGFuLm9yZy94MjY0Lmh0bWwgLSBvcHRpb25zOiBjYWJhYz0xIHJlZj0xNiBkZWJsb2NrPTE6MDowIGFuYWx5c2U9MHgzOjB4MTMzIG1lPXVtaCBzdWJtZT0xMCBwc3k9MSBwc3lfcmQ9MS4wMDowLjAwIG1peGVkX3JlZj0xIG1lX3JhbmdlPTI0IGNocm9tYV9tZT0xIHRyZWxsaXM9MiA4eDhkY3Q9MSBjcW09MCBkZWFkem9uZT0yMSwxMSBmYXN0X3Bza2lwPTEgY2hyb21hX3FwX29mZnNldD0tMiB0aHJlYWRzPTEgbG9va2FoZWFkX3RocmVhZHM9MSBzbGljZWRfdGhyZWFkcz0wIG5yPTAgZGVjaW1hdGU9MSBpbnRlcmxhY2VkPTAgYmx1cmF5X2NvbXBhdD0wIGNvbnN0cmFpbmVkX2ludHJhPTAgYmZyYW1lcz04IGJfcHlyYW1pZD0yIGJfYWRhcHQ9MiBiX2JpYXM9MCBkaXJlY3Q9MyB3ZWlnaHRiPTEgb3Blbl9nb3A9MCB3ZWlnaHRwPTIga2V5aW50PTI1MCBrZXlpbnRfbWluPTIgc2NlbmVjdXQ9NDAgaW50cmFfcmVmcmVzaD0wIHJjX2xvb2thaGVhZD02MCByYz1jcmYgbWJ0cmVlPTEgY3JmPTUxLjAgcWNvbXA9MC42MCBxcG1pbj0wIHFwbWF4PTY5IHFwc3RlcD00IGlwX3JhdGlvPTEuNDAgYXE9MToxLjAwAIAAAAANZYiBAAK/Egtb/4SKfwAAAAlBmghtiCX/yoAAAAAJQZ4QJxBP/+uBAAAACQGeGE1IJf/sgA==';
+  v.play().catch(() => {});
+}
+
+/* ---------- visualizer ---------- */
+const bins = new Uint8Array(64);
+function draw() {
+  const cv = $('viz');
+  if (!cv.offsetParent) { requestAnimationFrame(draw); return; }
+  const g = cv.getContext('2d'), W = cv.width, H = cv.height, N = 28, gap = 8, bw = (W - gap * (N + 1)) / N;
+  g.clearRect(0, 0, W, H);
+  const live = E.analyser && E.playing && !E.muted;
+  if (live) E.analyser.getByteFrequencyData(bins);
+  g.fillStyle = '#F5A524';
+  for (let i = 0; i < N; i++) {
+    const bin = Math.min(44, 1 + Math.floor(Math.pow(i / (N - 1), 1.7) * 43));
+    const v = live ? Math.min(1, Math.pow(bins[bin] / 255, 0.75) * (1 + i / N)) : 0;
+    const h = Math.max(10, v * (H - 40)), x = gap + i * (bw + gap), y = (H - h) / 2;
+    g.globalAlpha = live ? 0.35 + 0.65 * v : 0.22;
+    if (g.roundRect) { g.beginPath(); g.roundRect(x, y, bw, h, bw / 2); g.fill(); } else g.fillRect(x, y, bw, h);
+  }
+  g.globalAlpha = 1;
+  requestAnimationFrame(draw);
+}
+})();
+</script>
+</body>
+</html>

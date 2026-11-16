@@ -1,0 +1,11 @@
+{
+  "cleanUrls": true,
+  "redirects": [
+    { "source": "/apk", "destination": "https://github.com/Sumit607/saath/releases/latest/download/saath.apk", "permanent": false },
+    { "source": "/download", "destination": "https://github.com/Sumit607/saath/releases/latest/download/saath.apk", "permanent": false },
+    { "source": "/version.json", "destination": "https://github.com/Sumit607/saath/releases/latest/download/version.json", "permanent": false }
+  ],
+  "headers": [
+    { "source": "/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }] }
+  ]
+}

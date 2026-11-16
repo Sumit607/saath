@@ -1,0 +1,54 @@
+plugins {
+    id 'com.android.application'
+}
+
+// CI passes the GitHub run number, so every build has a higher version than the last.
+def vc = (System.getenv("SAATH_VERSION_CODE") ?: "1") as int
+
+android {
+    namespace 'com.saath.app'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "com.saath.app"
+        minSdk 29
+        targetSdk 35
+        versionCode vc
+        versionName "1.0.${vc}"
+    }
+
+    // One fixed key: Android only installs an update signed with the same key as the installed app.
+    signingConfigs {
+        release {
+            storeFile file("../keystore/saath.jks")
+            storePassword "saath-release"
+            keyAlias "saath"
+            keyPassword "saath-release"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+        debug {
+            signingConfig signingConfigs.release
+            applicationIdSuffix ".debug"
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+    }
+}
